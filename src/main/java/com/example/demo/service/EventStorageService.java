@@ -24,4 +24,8 @@ public class EventStorageService {
             return batch;
         });
     }
+
+    public Flux<Event> queryEvents(String eventType, long start, long end) {
+        return Flux.empty(); // mock
+    }
 }

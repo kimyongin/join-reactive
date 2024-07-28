@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.function.Tuple2;
 
 @Configuration
 public class ServiceConfig {
@@ -28,8 +29,8 @@ public class ServiceConfig {
     }
 
     @Bean
-    public ThreadLocalManager<Map<String/*actorId*/, Set<String/*eventType*/>>> eventFilterTLS() {
-        ThreadLocal<Map<String/*actorId*/, Set<String/*eventType*/>>> threadLocal =
+    public ThreadLocalManager<Map<String/*actorId*/, Map<String/*eventType*/, Tuple2<Long, Long>/*start-end*/>>> eventFilterTLS() {
+        ThreadLocal<Map<String/*actorId*/, Map<String/*eventType*/, Tuple2<Long, Long>/*start-end*/>>> threadLocal =
             ThreadLocal.withInitial(HashMap::new);
         return () -> threadLocal;
     }

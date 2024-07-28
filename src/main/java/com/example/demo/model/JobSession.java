@@ -9,5 +9,7 @@ public class JobSession {
     String actorId;
     String sessionId;
     String eventType;
+    long start;
+    long end;
 
 }

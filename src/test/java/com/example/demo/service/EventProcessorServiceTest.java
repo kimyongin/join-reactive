@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -62,13 +63,13 @@ class EventProcessorServiceTest {
         List<Event> events = IntStream.range(0, 1000)
             .mapToObj(value -> {
                 if (value % 4 == 0) {
-                    return new Event(ACTOR_ID_1, EVENT_BOSS_KILL, 1, 1);
+                    return new Event(ACTOR_ID_1, EVENT_BOSS_KILL, value, 1);
                 } else if(value % 4 == 1) {
-                    return new Event(ACTOR_ID_2, EVENT_MONSTER_KILL, 1, 1);
+                    return new Event(ACTOR_ID_2, EVENT_MONSTER_KILL, value, 1);
                 } else if(value % 4 == 2) {
-                    return new Event(ACTOR_ID_3, EVENT_MONSTER_KILL, 1, 1);
+                    return new Event(ACTOR_ID_3, EVENT_MONSTER_KILL, value, 1);
                 } else {
-                    return new Event(ACTOR_ID_4, EVENT_MONSTER_KILL, 1, 1);
+                    return new Event(ACTOR_ID_4, EVENT_MONSTER_KILL, value, 1);
                 }
             })
             .collect(Collectors.toList());
@@ -76,9 +77,9 @@ class EventProcessorServiceTest {
 
         // 작업 세션 MOCK 처리
         Mockito.when(jobSessionService.querySessions(ACTOR_ID_1))
-            .thenReturn(Flux.just(new JobSession(ACTOR_ID_1, SESSION_ID_1, EVENT_BOSS_KILL)));
+            .thenReturn(Flux.just(new JobSession(ACTOR_ID_1, SESSION_ID_1, EVENT_BOSS_KILL, Long.MIN_VALUE, Long.MAX_VALUE)));
         Mockito.when(jobSessionService.querySessions(ACTOR_ID_2))
-            .thenReturn(Flux.just(new JobSession(ACTOR_ID_2, SESSION_ID_1, EVENT_MONSTER_KILL)));
+            .thenReturn(Flux.just(new JobSession(ACTOR_ID_2, SESSION_ID_1, EVENT_MONSTER_KILL, Long.MIN_VALUE, Long.MAX_VALUE)));
         Mockito.when(jobSessionService.querySessions(ACTOR_ID_3))
             .thenReturn(Flux.empty());
         Mockito.when(jobSessionService.querySessions(ACTOR_ID_4))
@@ -103,10 +104,10 @@ class EventProcessorServiceTest {
             .verifyComplete();
 
         // 검증#3
-        verify(eventFilterService, times(1)).addItem(eq(ACTOR_ID_1), eq(EVENT_BOSS_KILL));
-        verify(eventFilterService, times(1)).addItem(eq(ACTOR_ID_2), eq(EVENT_MONSTER_KILL));
-        verify(eventFilterService, never()).addItem(eq(ACTOR_ID_4), any());
-        verify(eventFilterService, never()).addItem(eq(ACTOR_ID_3), any());
+        verify(eventFilterService, times(1)).addItem(eq(ACTOR_ID_1), eq(EVENT_BOSS_KILL), anyLong(), anyLong());
+        verify(eventFilterService, times(1)).addItem(eq(ACTOR_ID_2), eq(EVENT_MONSTER_KILL), anyLong(), anyLong());
+        verify(eventFilterService, never()).addItem(eq(ACTOR_ID_4), any(), anyLong(), anyLong());
+        verify(eventFilterService, never()).addItem(eq(ACTOR_ID_3), any(), anyLong(), anyLong());
         verify(eventOperatorService, times(500)).operate(any(JobSession.class), any(Event.class));
         verify(eventStorageService, times(500 / 25)).saveBatch(any());
 

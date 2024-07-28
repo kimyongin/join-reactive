@@ -8,6 +8,6 @@ import reactor.core.publisher.Flux;
 public class JobSessionService {
 
     public Flux<JobSession> querySessions(String actorId) {
-        return Flux.empty(); // mock 처리
+        return Flux.empty(); // mock
     }
 }

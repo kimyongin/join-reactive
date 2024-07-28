@@ -25,13 +25,10 @@ public class EventOperatorService {
     }
 
     private Mono<Result> processEvent(JobSession jobSession, Event event) {
-        // 중간집계값 조회 (없으면, 이벤트들을 조회하여 중간집계값을 계산)
+        // 중간집계값 조회
         Map<String, Integer> sumMap = eventAccumulator.getThreadLocal().get();
         Mono<Integer> sumMono = Mono.justOrEmpty(sumMap.get(event.getActorId()))
-            .switchIfEmpty(eventStorageService.queryEvents(event.getEventType(), jobSession.getStart(), jobSession.getEnd())
-                .map(Event::getEventContent)
-                .reduce(0, Integer::sum)
-            );
+            .switchIfEmpty(Mono.defer(() -> getSumByEvents(jobSession, event))); // 없으면, 이벤트들을 조회하여 중간집계값을 계산
 
         // 중간집계값에 신규값을 누적
         return sumMono.map(sum -> {
@@ -43,6 +40,12 @@ public class EventOperatorService {
                 String.valueOf(currentSum)
             );
         }).doOnNext(this::debugPrint);
+    }
+
+    private Mono<Integer> getSumByEvents(JobSession jobSession, Event event) {
+        return eventStorageService.queryEvents(event.getActorId(), event.getEventType(), jobSession.getStart(), jobSession.getEnd())
+            .map(Event::getEventContent)
+            .reduce(0, Integer::sum);
     }
 
     private void debugPrint(Result result) {

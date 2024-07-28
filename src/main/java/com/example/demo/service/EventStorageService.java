@@ -25,7 +25,7 @@ public class EventStorageService {
         });
     }
 
-    public Flux<Event> queryEvents(String eventType, long start, long end) {
+    public Flux<Event> queryEvents(String actorId, String eventType, long start, long end) {
         return Flux.empty(); // mock
     }
 }

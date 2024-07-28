@@ -30,7 +30,7 @@ public class EventProcessorService {
             .switchIfEmpty(createFilter(event)) // 없으면 필터 생성
             .map(filter -> {
                 Tuple2<Long, Long> period = filter.get(event.getEventType());
-                return period.getT1() <= event.getEventTimestamp() && event.getEventTimestamp() <= period.getT2();
+                return period.getT1() <= event.getEventTimestamp() && event.getEventTimestamp() < period.getT2();
             })
         );
 

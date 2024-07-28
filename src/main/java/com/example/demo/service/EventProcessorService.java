@@ -20,7 +20,7 @@ public class EventProcessorService {
 
     public Flux<Result> processEvents(Flux<Event> events) {
         return events
-            .filterWhen(event -> eventFilterService.filter(event))  // 이벤트 필터링
+            .filterWhen(event -> eventFilterService.filter(event))  // 이벤트 필터
             .transform(filteredEvents -> storageService.saveEvents(filteredEvents)) // 이벤트 저장
             .flatMap(event ->
                 jobSessionService.querySessions(event.getActorId()) // 작업세션 조회

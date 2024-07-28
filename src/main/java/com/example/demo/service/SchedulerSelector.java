@@ -1,8 +1,8 @@
-package com.example.demo.service.sum2;
+package com.example.demo.service;
 
 import reactor.core.scheduler.Scheduler;
 
 @FunctionalInterface
 public interface SchedulerSelector {
-    Scheduler select(int value);
+    Scheduler select(String actorId);
 }

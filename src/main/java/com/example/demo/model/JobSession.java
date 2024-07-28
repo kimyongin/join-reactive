@@ -5,8 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Result {
-    private String actorId;
-    private String sessionId;
-    private String result;
+public class JobSession {
+    String actorId;
+    String sessionId;
+    String eventType;
+
 }

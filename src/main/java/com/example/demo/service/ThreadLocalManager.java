@@ -1,4 +1,4 @@
-package com.example.demo.service.sum2;
+package com.example.demo.service;
 
 @FunctionalInterface
 public interface ThreadLocalManager<T> {

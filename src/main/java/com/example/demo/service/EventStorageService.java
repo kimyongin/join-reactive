@@ -17,7 +17,7 @@ public class EventStorageService {
             .flatMap(this::saveBatch);  // 모인 배치를 저장
     }
 
-    private Mono<List<Event>> saveBatch(List<Event> batch) {
+    Mono<List<Event>> saveBatch(List<Event> batch) {
         return Mono.fromCallable(() -> {
             System.out.println("Saving batch of " + batch.size() + " events...");
             // 여기에 배치 저장 로직 구현 (예: 데이터베이스 배치 쓰기)

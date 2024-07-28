@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -82,7 +83,13 @@ class EventProcessorService2Test {
             .verifyComplete();
 
         // 검증#3
-        verify(eventFilterService, times(1)).addItem(eq(ACTOR_ID_1), eq(EVENT_BOSS_KILL), anyLong(), anyLong());
+        verify(eventFilterService, times(1)).addItem(
+            argThat(jobSession -> jobSession.getActorId().equals(ACTOR_ID_1) &&
+                jobSession.getSessionId().equals(SESSION_ID_1) &&
+                jobSession.getEventType().equals(EVENT_BOSS_KILL) &&
+                jobSession.getStart() == 100 &&
+                jobSession.getEnd() == 200)
+        );
         verify(eventOperatorService, times(100)).operate(any(JobSession.class), any(Event.class));
         verify(eventStorageService, times(100 / 25)).saveBatch(any());
 

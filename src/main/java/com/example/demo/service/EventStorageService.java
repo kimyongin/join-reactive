@@ -12,9 +12,9 @@ public class EventStorageService {
     private static final int BATCH_SIZE = 25;
     private static final Duration MAX_BATCH_DURATION = Duration.ofSeconds(1);
 
-    public Flux<List<Event>> saveEvents(Flux<Event> events) {
+    public Flux<Event> saveEvents(Flux<Event> events) {
         return events.bufferTimeout(BATCH_SIZE, MAX_BATCH_DURATION)  // 25개의 이벤트를 모으거나 최대 1초 동안 기다림
-            .flatMap(this::saveBatch);  // 모인 배치를 저장
+            .flatMap(this::saveBatch).flatMap(Flux::fromIterable);  // 모인 배치를 저장
     }
 
     Mono<List<Event>> saveBatch(List<Event> batch) {
